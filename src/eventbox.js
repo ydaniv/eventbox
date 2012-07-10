@@ -27,10 +27,15 @@
 		return (Box[t][_token] = _scope ? fn.bind(_scope) : fn), _token++;
 	}
 	function remove(type, token) {
-		if (Box[type] && Box[type][token])
+		if (typeof token === 'function' && Box[type]) {
+			for (var t in Box[type])
+				if (token === Box[type][t])
+					delete Box[type][t];
+		} else if (Box[type] && Box[type][token]) {
 			delete Box[type][token];
-		else
+		} else {
 			delete Box[type];
+		}
 	}
 	function emit(fn, data, args) {
 		setTimeout(function () {
