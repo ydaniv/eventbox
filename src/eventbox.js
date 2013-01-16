@@ -16,69 +16,138 @@
 		(_window.Eventbox = factory(_window));
 	}
 }(window, function (global) {
-	var _self, Box = {}, _scope,
+
+	var _self, _scope,
+		Box = {},
 		objToString = global.Object.prototype.toString,
-		slice = global.Array.prototype.slice, _token = 0;
+		slice = global.Array.prototype.slice,
+		_token = 0;
+
+
 	function isObj(obj) {
 		return objToString.call(obj) == '[object Object]';
 	}
-	function add(t, fn) {
-		if (!(t in Box)) Box[t] = {};
-		return (Box[t][_token] = _scope ? fn.bind(_scope) : fn), _token++;
+
+
+	function add(topic, fn) {
+
+		if ( ! (topic in Box) )
+			Box[topic] = {};
+
+		Box[topic][_token] = _scope ? fn.bind(_scope) : fn;
+
+		_token += 1;
+
+		return _token;
 	}
+
+
 	function remove(type, token) {
-		if (typeof token === 'function' && Box[type]) {
-			for (var t in Box[type])
-				if (token === Box[type][t])
+
+		var t;
+
+		if ( typeof token == 'function' && Box[type] ) {
+			// `token` is a reference to a handler 
+			for ( t in Box[type] )
+				if ( token === Box[type][t] )
 					delete Box[type][t];
-		} else if (Box[type] && Box[type][token]) {
+		}
+
+		else if ( Box[type] && Box[type][token] ) {
 			delete Box[type][token];
-		} else {
+		}
+
+		else {
 			delete Box[type];
 		}
 	}
-	function emit(fn, data, args) {
+
+	function emit(fn, data) {
 		setTimeout(function () {
-			return fn.apply(this, [data].concat(args));
+			return fn.call(this, data);
 		}, 0);
 	}
+
 	return _self = {
-		notify	: function (note) {
-			var h, t, args = slice.call(arguments, 1);
-			if (isObj(note)) {
-				for (t in note)
-					if (t in Box)
-						for (h in Box[t]) emit(Box[t][h], note[t], args);
-			} else if (typeof note == 'string' && note in Box)
-				for (h in Box[note]) emit(Box[note][h], args[0], args.slice(1));
+
+		notify	: function (notification, data) {
+
+			var handler, topic;
+
+			if ( isObj(notification) ) {
+
+				for ( topic in notification )
+
+					if ( topic in Box )
+
+						for ( handler in Box[topic] )
+							emit(Box[topic][handler], notification[topic]);
+			}
+
+			else if ( typeof notification == 'string' && notification in Box ) {
+
+				for ( handler in Box[notification] )
+					emit(Box[notification][handler], data);
+
+			}
+
 			return _self;
 		},
-		listen	: function (note, handler) {
-			var fn_map = {}, k;
-			if (isObj(note))
-				for (k in note) (function (t, obj) {
-					if (typeof obj == 'function')
-						fn_map[t] = add(t, obj);
-					else if (isObj(obj))
-						fn_map[t] = add(t, function () {
-							_self.notify.apply(_self, [obj].concat(slice.call(arguments)));
+
+
+		listen	: function (notification, handler) {
+
+			var handlers_map = {}, key;
+
+			if ( isObj(notification) ) {
+
+				for ( key in notification ) (function (topic, obj) {
+
+					if ( typeof obj == 'function' )
+						handlers_map[topic] = add(topic, obj);
+
+					else if ( isObj(obj) )
+
+						handlers_map[topic] = add(topic, function () {
+							_self.notify(obj);
 						});
-				})(k, note[k]);
-			else if (typeof note == 'string')
-				fn_map = add(note, handler);
-			if (_scope) _scope = null;
-			return fn_map;
+
+				})(key, notification[key]);
+
+			}
+
+			else if ( typeof notification == 'string' ) {
+
+				handlers_map = add(notification, handler);
+
+			}
+
+			if (_scope)
+				_scope = null;
+
+			return handlers_map;
 		},
+
+
 		unlisten: function (types, idx) {
+
+			var topic;
+
 			if (typeof types == 'string')
 				remove(types, idx);
-			else if (isObj(types))
-				for (var _t in types)
-					remove(_t, types[_t]);
+
+			else if ( isObj(types) )
+				for ( topic in types )
+					remove(topic, types[topic]);
+
 			return _self;
 		},
+
+
 		bind	: function (scope) {
 			return _scope = scope, _self;
 		}
+
+
 	};
 }));
