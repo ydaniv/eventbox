@@ -1,6 +1,6 @@
 /**!
  * Eventbox Pub/Sub - simple, tiny and robust.
- * Copyright (C) 2011 Yehonatan Daniv <maggotfish@gmail.com> under the WTFPL license
+ * Copyright 2011-2013 Yehonatan Daniv under the WTFPL license
  *
  *          DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
  * TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
@@ -13,6 +13,8 @@
 		define(function () {
 			return factory(_window);
 		});
+	} else if ( typeof exports == 'object' ) {
+		module.exports = factory(_window);
 	} else {
 		_window.Eventbox = factory(_window);
 	}
@@ -21,7 +23,8 @@
 	var _self, _scope,
 		Box = {},
 		objToString = global.Object.prototype.toString,
-		_token = 0;
+		_token = 0,
+		emit = global.setImmediate ? emitImmediate : emitTimeout;
 
 
 	function isObj(obj) {
@@ -62,7 +65,13 @@
 		}
 	}
 
-	function emit(fn, data) {
+	function emitImmediate(fn, data) {
+		setImmediate(function () {
+			return fn.call(this, data);
+		}, 0);
+	}
+
+	function emitTimeout(fn, data) {
 		setTimeout(function () {
 			return fn.call(this, data);
 		}, 0);
