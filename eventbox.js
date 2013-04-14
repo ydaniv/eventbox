@@ -68,7 +68,7 @@
 	function emitImmediate(fn, data) {
 		setImmediate(function () {
 			return fn.call(this, data);
-		}, 0);
+		});
 	}
 
 	function emitTimeout(fn, data) {
