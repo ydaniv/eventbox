@@ -67,13 +67,13 @@
 
 	function emitImmediate(fn, data) {
 		setImmediate(function () {
-			return fn.call(this, data);
+			return fn(data);
 		});
 	}
 
 	function emitTimeout(fn, data) {
 		setTimeout(function () {
-			return fn.call(this, data);
+			return fn(data);
 		}, 0);
 	}
 
