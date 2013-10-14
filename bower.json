@@ -1,0 +1,18 @@
+{
+  "name": "eventbox",
+  "main": "eventbox.js",
+  "version": "0.2.0",
+  "homepage": "https://github.com/ydaniv/eventbox",
+  "authors": [
+    "Yehonatan Daniv <maggotfish@gmail.com>"
+  ],
+  "description": "Pub/Sub - simple, tiny and robust.",
+  "keywords": [
+    "pubsub"
+  ],
+  "license": "WTFPL",
+  "ignore": [
+    "**/.*",
+    "package.json"
+  ]
+}
