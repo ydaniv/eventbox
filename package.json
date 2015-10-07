@@ -2,7 +2,7 @@
   "amd": {},
   "volo": {},
   "name": "eventbox",
-  "description": "Robust yet simple topic-based publish/subscribe library.",
+  "description": "Pub/Sub - simple, tiny and robust.",
   "version": "0.2.0",
   "main": "eventbox.js",
   "scripts": {
