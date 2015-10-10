@@ -1,102 +1,81 @@
-Eventbox.js
-===========
+Eventbox
+========
 
-About:
-------
-Eventbox.js is a robust yet simple app-level events observer.  
-It enables loose coupling of modules and emitting custom events.
+Pub/Sub - simple, tiny and robust.
 
+## About
 
-Dependencies:
-------------
-Eventbox.js has no dependencies what so ever and is library agnostic.
+Eventbox.js is a robust yet simple topic-based Pub/Sub library for the browser.
+It enables decoupling of modules and keeps you awesome.
 
+Eventbox, by default, invokes each handler in a separate task of the JavaScript engine's Event Loop,
+also known as "macro tasks". This ensures that each handler is run in a separate stack and also
+allows the browser to render and respond to user/requests input in between calls.
 
-How to use:
------------
-Include the eventbox.js script at the top of your inclusion stack.
-Then, anywhere in the code, you can simply call the eventbox instance with:
-	Eventbox
+It's possible to customize Eventbox's invocation mechanism to use micro tasks,
+e.g. via [ASAP](https://github.com/kriskowal/asap), simple synchronous call, etc.
 
-Note: Since Eventbox is a property of the global object it is better to reference it
-with a local variable for better performance.
-Like: 
-	var eventbox = window.Eventbox;
+## Dependencies
 
-Eventbox.js can be used to notify/listen to notifications between different modules, like so:
-
-Listening/notifying:
-
-	Eventbox.listen({
-		'action-a' : function (data [, arguments]) {
-			// do stuff after action-a has been done
-		}
-	});
-	Eventbox.notify({
-		'action-b' : {
-			stuff: 'data to send to listening handlers'
-		}
-	} [, arguments ]);
-
-Or:
-
-	Eventbox.listen('action-a', function (data [, arguments]) {
-		// do stuff after action-a has been done
-	});
-	Eventbox.notify('action-b', {
-		stuff: 'data to send to listening handlers'
-	} [, arguments ]);
+Eventbox.js has no dependencies whatsoever.
 
 
-If .listen receives an Object as a handler it wraps it in a function that calls .notify with that Object as its param:
+## Usage
 
-	Eventbox.listen({
-		'action-a' : {
-			'another-action': {
-				//more data
-			}
-		}
-	});
+Eventbox uses a UMD wrapper, so you can consume it either as an AMD module, a CommonJS module
+or on the global context as `eventbox`.
 
-The example above means that by notifying 'action-a' 'another-action' will be notified with the corresponding object as data.
+TBD
 
+## Installing
 
-Unlistening:
+* Download the source
+* Or install via [npm](https://www.npmjs.com/):
 
-	Eventbox.unlisten(type [, index]);
+```
+> npm install eventbox
+```
 
-When unlisten receives a string it deals with it as a type and removes all event handlers
-for this type.
-You can also send an optional index param that will make Eventbox try to remove a specific handler from the set
-of handlers registered for that type.
+* Or install via [Bower](http://bower.io/):
 
-Mass listening/notifying:
+```
+> bower install eventbox
+```
 
-    var types_to_indices_map = Eventbox.listen({
-        'action-a' : callback_a,
-        'action-b' : callback_b
-        // ...
-    });
+## Note on Supported Browsers
 
-    Eventbox.notify({
-        'action-a' : {a:1, b:2},
-        'action-b' : {c:3, d:4}
-        // ...
-    });
+Eventbox uses some ES5 functions that can be shimmed:
 
-The variable "types_to_indices_map" is an object returned from Eventbox.listen that equals a map
-of types to the specific index of the event handler created for it on that call.
-You can send this map later to Eventbox.unlisten to remove these specific handlers, like so:
+* `Array.prototype.indexOf()`
+* `Array.prototype.forEach()`
+* `Object.keys()`
 
-    Eventbox.unlisten(types_to_indices_map);
+## Testing
 
-You can set the handlers' scope for a single .listen call (single stack):
+Eventbox uses Intern as test runner and Chai for assertions.
 
-    Eventbox.bind(my_scope).listen({
-        'action-a' : callback_a,
-    });
+To run tests do:
 
-In the example above callback_a will run with my_scope as its [[this]] variable (scope).
+```
+> npm test
+```
 
-* Note: after one call to .listen, if the scope was set with .bind it will be reset back to the
-        global scope.
+## Contributing
+
+For any question, issue, complaint or praise please **open an issue**. Of course, **pull requests are welcome!**
+
+If you'd really like to help out you can start with one of the following and send a pull request:
+
+* Improve/add unit tests.
+* Add integration tests.
+* Improve documentation in the README file.
+* Add CI integration (Travis?).
+* Add coverage integration (Coveralls?).
+* Add lovely badges to the README (:
+* Write up a nice demo with live code editor.
+
+## License
+
+Eventbox is licensed under the BSD 2-Clause License. Please see the LICENSE file for the full license.
+
+Copyright (c) 2015 Yehonatan Daniv.

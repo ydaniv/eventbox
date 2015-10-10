@@ -15,7 +15,10 @@
   ],
   "license": "BSD-2-Clause",
   "ignore": [
-    "**/.*",
-    "package.json"
+    "tests/.*",
+    "package.json",
+    "LICENSE",
+    "README.md",
+    ".gitignore"
   ]
 }
