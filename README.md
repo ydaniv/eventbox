@@ -15,6 +15,10 @@ allows the browser to render and respond to user/requests input in between calls
 It's possible to customize Eventbox's invocation mechanism to use micro tasks,
 e.g. via [ASAP](https://github.com/kriskowal/asap), simple synchronous call, etc.
 
+Evenbox looks for `setImmediate` on the global object and uses it if found. Otherwise it falls back to using
+`setTimeout(..., 0)`. If you really value every millisecond you can
+polyfill it using [YuzuJS](https://github.com/YuzuJS/setImmediate).
+
 ## Dependencies
 
 Eventbox.js has no dependencies whatsoever.
@@ -42,14 +46,14 @@ or on the global object as `eventbox`.
 
 Subscribes `handler` to `topic`, or multiple handlers to corresponding topics.
 
-Example:
+*Example*:
 
     eventbox.subscribe('fantasy', tolkienHandler);
     // subscribes the tolkienHandler handler to the 'fantasy' topic
 
 If `topic` is an `Object` then each of its key-value pairs is used as topic-handler pair to subscribe.
 
-Example:
+*Example*:
 
     eventbox.subscribe({
         fantasy: tolkienHandler,
@@ -119,7 +123,7 @@ If `topic` is a `string` and `handler` is a `function` then only that handler is
     // removes only the tolkienHandler handler for 'fantasy' topic
 
 If `topic` is an `Object` then each of its key-value pairs is used as the above.
-If a value is falsy - `null`/`false`/`undefined` etc. - then all handlers a removed for that topic key.
+If a value is falsy - `null`/`false`/`undefined` etc. - then all handlers for that topic key are removed.
 
 *Example*:
 
