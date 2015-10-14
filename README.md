@@ -23,9 +23,135 @@ Eventbox.js has no dependencies whatsoever.
 ## Usage
 
 Eventbox uses a UMD wrapper, so you can consume it either as an AMD module, a CommonJS module
-or on the global context as `eventbox`.
+or on the global object as `eventbox`.
 
-TBD
+### Simple Example
+
+    var eventbox = require('eventbox');
+    var log = function (data) {
+        console.log(data);
+    };
+
+    eventbox.subscribe('topic_1', log);
+    eventbox.publish('topic_1', 'shalom');
+    // logs 'shalom'
+
+### API Reference
+
+#### `subscribe(topic, handler)`
+
+Subscribes `handler` to `topic`, or multiple handlers to corresponding topics.
+
+Example:
+
+    eventbox.subscribe('fantasy', tolkienHandler);
+    // subscribes the tolkienHandler handler to the 'fantasy' topic
+
+If `topic` is an `Object` then each of its key-value pairs is used as topic-handler pair to subscribe.
+
+Example:
+
+    eventbox.subscribe({
+        fantasy: tolkienHandler,
+        scifi: adamsHandler
+    });
+    // subscribes the tolkienHandler handler for 'fantasy' topic
+    // subscribes the adamsHandler handler for 'scifi' topic
+
+#### `publish(topic [, data])`
+
+Publishes a `topic` with the given `data`, or multiple `topic`s with corresponding data.
+
+*Example*:
+
+    // publish a specific topic
+    eventbox.publish('fantasy', { fellowship: 'ring' });
+
+    // publish a multiple topics
+    eventbox.publish({
+        fantasy: { fellowship: 'ring' },
+        scifi: { answer: 42 }
+    });
+
+To replace the `emitter` function that will trigger the handler for this `publish()` call *ONCE*
+invoke this method using your `function` of choice as the **context**.
+
+*Example*:
+
+    // in this example we load asap (https://github.com/kriskowal/asap)
+    // for yielding execution in next micro-task
+    var asap = require('asap');
+
+    eventbox.publish.call(asap, 'fantasy', { king: 'Aragorn' });
+
+You can also generate a new function/method with a special emitter using partial implementation (`.bind()`).
+
+*Example*:
+
+    // loading the ASAP module
+    var asap = require('asap');
+
+    // creating a special publisher
+    var publishMicroTask = eventbox.publish.bind(asap);
+
+    // we can also set it as a method of eventbox
+    // eventbox.publishAsap = publishMicroTask;
+
+    // now publish a micro task
+    eventbox.publishAsap('fantasy', { king: 'Aragorn' });
+
+#### `unsubscribe(topic [, handler])`
+
+Unsubscribes a handler, or all handlers, from `topic`.
+
+If `topic` is a `string` and `handler` is not passed then all handlers for that topic are removed.
+
+*Example*:
+
+    eventbox.unsubscribe('fantasy');
+    // removes all handlers for 'fantasy'
+
+If `topic` is a `string` and `handler` is a `function` then only that handler is removed.
+
+*Example*:
+
+    eventbox.unsubscribe('fantasy', tolkienHandler);
+    // removes only the tolkienHandler handler for 'fantasy' topic
+
+If `topic` is an `Object` then each of its key-value pairs is used as the above.
+If a value is falsy - `null`/`false`/`undefined` etc. - then all handlers a removed for that topic key.
+
+*Example*:
+
+    eventbox.unsubscribe({
+        fantasy: tolkienHandler,
+        horror: null
+    });
+    // removes only the tolkienHandler handler for 'fantasy' topic
+    // AND removes all handlers for 'horror'
+
+#### `setDefaultEmitter([fn])`
+
+Sets the default `emitter` function to `fn`, if that argument is passed.
+
+If called without arguments (or `null`) it restores the default `emitter` to eventbox's default `emitter` function,
+which is either using `setImmediate(...)` if it's present on the global object, or `setTimeout(... , 0)`.
+
+An `emitter` function is a `function` in the form of `(handler, data) => handler(data)`. The way you wrap the
+invocation of `handler`, or if you wrap it at all, is up to you.
+
+*Example*:
+
+    // setting default to emitter to a sync emitter.
+    eventbox.setDefaultEmitter(function (fn, data) {
+        fn(data);
+    });
+    // revert back to default async emitter.
+    eventbox.setDefaultEmitter();
+
+#### `unsubscribeAll()`
+
+Discards all subscriptions. This is usually used for testing.
 
 ## Installing
 

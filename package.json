@@ -1,7 +1,7 @@
 {
   "name": "eventbox",
   "description": "Pub/Sub - simple, tiny and robust.",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "main": "eventbox.js",
   "scripts": {
     "test": "./node_modules/.bin/intern-client config=tests/intern"
@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/ydaniv/eventbox#readme",
   "devDependencies": {
-    "intern": "~3.0.0",
+    "intern": "~3.0.6",
     "requirejs": "~2.1.20"
   },
   "amd": {},
