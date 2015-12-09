@@ -3,6 +3,8 @@ Eventbox
 
 Pub/Sub - simple, tiny and robust.
 
+[![NPM](https://nodei.co/npm-dl/eventbox.png?months=3)](https://nodei.co/npm/eventbox/)
+
 ## About
 
 Eventbox.js is a robust yet simple topic-based Pub/Sub library for the browser.
